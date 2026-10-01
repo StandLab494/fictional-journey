@@ -114,6 +114,33 @@ def suggestion_handler(message):
         logger.exception("Failed to submit suggestion")
         bot.reply_to(message, "❌ Не удалось отправить предложение. Попробуй ещё раз.")
 
+@bot.message_handler(
+    content_types=SUPPORTED_TYPES,
+    func=lambda m: (
+        m.chat.id == ADMIN_CHAT_ID
+        and m.reply_to_message is not None
+    )
+)
+def admin_reply_handler(message):
+    suggestion = get_suggestion(message.reply_to_message.message_id)
+    if not suggestion:
+        return
+
+    if suggestion["status"] != "pending":
+        bot.reply_to(message, "ℹ️ Это предложение уже обработано.")
+        return
+
+    try:
+        bot.copy_message(
+            chat_id=suggestion["user_id"],
+            from_chat_id=message.chat.id,
+            message_id=message.message_id,
+        )
+        bot.reply_to(message, "✅ Ответ отправлен автору предложения.")
+    except Exception:
+        logger.exception("Failed to send admin reply to author")
+        bot.reply_to(message, "❌ Не удалось отправить ответ автору.")
+
 @bot.callback_query_handler(func=lambda call: call.data == "suggestion:approve")
 def approve_handler(call):
     if call.message.chat.id != ADMIN_CHAT_ID:
