@@ -100,7 +100,7 @@ def test_handler(message):
             text,
             reply_markup=moderation_keyboard()
         )
-        save_suggestion(sent.message_id, -1000000000 - sent.message_id)
+        save_suggestion(sent.message_id, message.from_user.id)
 
     bot.send_message(
         ADMIN_CHAT_ID,
