@@ -7,13 +7,13 @@ from telebot import apihelper
 
 TOKEN = os.getenv("BOT_TOKEN")
 SERVER_URL = os.getenv("SERVER_URL", "http://127.0.0.1:8081").rstrip("/")
-ADMIN_CHAT_ID = int(os.getenv("ADMIN_CHAT_ID", "0"))
+ADMIN_USER_ID = int(os.getenv("ADMIN_USER_ID", "0"))
 DB_PATH = os.getenv("DB_PATH", "messages.db")
 
 if not TOKEN:
     raise RuntimeError("BOT_TOKEN is not set")
-if not ADMIN_CHAT_ID:
-    raise RuntimeError("ADMIN_CHAT_ID is not set")
+if not ADMIN_USER_ID:
+    raise RuntimeError("ADMIN_USER_ID is not set")
 
 apihelper.API_URL = f"{SERVER_URL}/bot{{0}}/{{1}}"
 apihelper.FILE_URL = f"{SERVER_URL}/file/bot{{0}}/{{1}}"
@@ -94,12 +94,12 @@ SUPPORTED_TYPES = [
 
 @bot.message_handler(
     content_types=SUPPORTED_TYPES,
-    func=lambda m: m.chat.id != ADMIN_CHAT_ID,
+    func=lambda m: m.from_user.id != ADMIN_USER_ID,
 )
 def user_message_handler(message):
     try:
         copied = bot.copy_message(
-            chat_id=ADMIN_CHAT_ID,
+            chat_id=ADMIN_USER_ID,
             from_chat_id=message.chat.id,
             message_id=message.message_id,
         )
@@ -113,7 +113,7 @@ def user_message_handler(message):
 @bot.message_handler(
     content_types=SUPPORTED_TYPES,
     func=lambda m: (
-        m.chat.id == ADMIN_CHAT_ID
+        m.from_user.id == ADMIN_USER_ID
         and m.reply_to_message is not None
     ),
 )
@@ -135,7 +135,7 @@ def admin_reply_handler(message):
 
 
 @bot.message_handler(
-    func=lambda m: m.chat.id != ADMIN_CHAT_ID,
+    func=lambda m: m.from_user.id != ADMIN_USER_ID,
     content_types=[
         "contact",
         "location",
