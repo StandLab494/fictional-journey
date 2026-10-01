@@ -83,30 +83,6 @@ def start_handler(message):
         "Сообщение попадёт на модерацию, а после одобрения будет опубликовано."
     )
 
-@bot.message_handler(commands=["test"])
-def test_handler(message):
-    if message.chat.id != ADMIN_CHAT_ID:
-        return
-
-    test_messages = [
-        "🧪 ТЕСТ №1\n\nПривет! Это тестовое предложение. Проверь, работает ли ответ реплаем.",
-        "🧪 ТЕСТ №2\n\nПроверка модерации: можно ли это сообщение одобрить или отклонить?",
-        "🧪 ТЕСТ №3\n\nПроверка связи с автором: ответь на это сообщение через Reply."
-    ]
-
-    for text in test_messages:
-        sent = bot.send_message(
-            ADMIN_CHAT_ID,
-            text,
-            reply_markup=moderation_keyboard()
-        )
-        save_suggestion(sent.message_id, message.from_user.id)
-
-    bot.send_message(
-        ADMIN_CHAT_ID,
-        "✅ Созданы 3 тестовых предложения. Можешь отвечать на них реплаем или проверять кнопки."
-    )
-
 @bot.message_handler(commands=["help"])
 def help_handler(message):
     bot.send_message(
