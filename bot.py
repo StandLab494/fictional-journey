@@ -126,10 +126,6 @@ def admin_reply_handler(message):
     if not suggestion:
         return
 
-    if suggestion["status"] != "pending":
-        bot.reply_to(message, "ℹ️ Это предложение уже обработано.")
-        return
-
     try:
         bot.copy_message(
             chat_id=suggestion["user_id"],
